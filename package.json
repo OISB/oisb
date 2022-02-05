@@ -1,0 +1,14 @@
+{
+  "name": "rto",
+  "version": "0.0.0",
+  "description": "Run This Online (RTO)",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Tosh",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.4.2"
+  }
+}
