@@ -43,7 +43,7 @@
 
                 stdio += data.length;
                 
-                this.emit("data", data.toString());
+                this.emit("data", data);
             });
             
             child.stderr.on("data", (data) => {
@@ -59,18 +59,13 @@
 
                 stdio += data.length;
 
-                this.emit("throw", data.toString());
+                this.emit("throw", data);
             });
         }
         
         stdin(stdin) {
-            var stdin_s = Readable({
-                read: () => {}
-            });
+            var stdin_s = Readable.from(stdin);
             
-            stdin_s.push(stdin);
-            stdin_s.push(null);
-
             stdin_s.pipe(this.child.stdin);
             
             this.stdins++;

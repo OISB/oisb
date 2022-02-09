@@ -90,7 +90,7 @@
                 return -1;
             }
             
-            logging.log("dock(" + this.id + ").input: " + input);
+            logging.log("dock(" + this.id + ").input: " + String(input));
             
             this.child.stdin(input);
             

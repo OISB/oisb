@@ -65,7 +65,7 @@
                 conn.notify(data);
         }
         
-        ping(confirm = false) {
+        ping(confirm = true) {
             var now = Date.now();
             
             for (var conn of this.conns)

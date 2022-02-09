@@ -6,7 +6,7 @@
     var dock_library = require("./dock");
     var child_library = require("./child");
     var docking_library = require("./docking");
-    var json_library = require("./json_parsing");
+    var format_library = require("./format");
     var log_library = require("./log_2");
     
     var fs = require("fs").promises;
@@ -40,7 +40,7 @@
     
     var docking = docking_library.init(Dock, options, logging);
     
-    var json = json_library.init(options, logging);
+    var format = format_library.init(options, configs, logging);
     
     setInterval(() => cast.ping(), options.max_ping == null ? 40000 : options.max_ping);
     
@@ -94,11 +94,9 @@
         dock.on("data", (data) => {
             logging.log("actor(" + actor.id + "): dock.on(data): " + JSON.stringify(data));
 
-            try {
-                data = json.output(JSON.parse(data));
-            } catch (info) {
-                // ???
+            data = format.bin_to_output(data);
 
+            if (data == null) {
                 logging.log("actor(" + actor.id + "): dock.on(data): invalid outputJSON");
 
                 return;
@@ -112,34 +110,34 @@
         
         actor.on("run", async (input, status_back) => {
             logging.log("actor(" + actor.id + ").on(run): " + JSON.stringify(input));
-            
-            try {
-                input = json.input(input);
-            } catch (info) {
-                // ???
+
+            var bin = format.input_to_bin(input);
                 
+            if (bin == null) {
                 logging.log("actor(" + actor.id + ").on(run): invalid inputJSON");
                 
                 return;
             }
             
-            if (!configs.has(String(input.language))) {
-                logging.log("actor(" + actor.id + ").on(run): unknown language id: " + String(input.language));
+            if (!configs.has(String(input.lang))) {
+                logging.log("actor(" + actor.id + ").on(run): unknown lang id: " + String(input.lang));
 
                 actor.notify({
                     action: "throw",
                     data: {
-                        id: "unknown_language",
-                        long: "Unknown language ID: " + String(input.language)
+                        id: "no_config",
+                        long: "No config for ID: " + String(input.lang)
                     }
                 });
                 
                 return;
             }
             
-            dock.run(configs.get(input.language).image);
+            dock.run(configs.get(input.lang).dock);
+
+            console.log(bin);
             
-            dock.input(JSON.stringify(input));
+            dock.input(bin);
             dock.finish_input();
 
             dock.once("finish", (status) => {
