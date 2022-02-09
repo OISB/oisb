@@ -1,4 +1,6 @@
 (() => {
+    var child_process = require("child_process");
+
     var Child;
     
     var options;
@@ -27,17 +29,22 @@
                 this.id = this.docking.provision_id();
             
                 logging.log("dock(" + this.id + ").run: " + image);
+
+                child_process.spawn("./dock_kill", ["21", "rto_" + this.id], {
+                    detached: true,
+                    stdio: "ignore"
+                }).unref();
                 
                 var args = [
                     "timeout", "--foreground", "-s", "SIGKILL", "20",
                     "docker", "run", "--rm", "-i",
                     "--runtime", (options.runtime == null ? "runsc" : options.runtime),
                     "--network", "none",
-                    "--memory", "200000000",
-                    "--memory-reservation", "100000000",
-                    "--memory-swap", "200000000",
+                    "--memory", "100000000",
+                    "--memory-reservation", "20000000",
+                    "--memory-swap", "100000000",
                     "--cpu-shares", "128",
-                    "--cpus", "1.0",
+                    "--cpus", "0.25",
                     "--name", "rto_" + this.id,
                     image
                 ];
@@ -45,13 +52,13 @@
                 this.child = new Child(args);
                 
                 this.child.on("data", (data) => {
-                    logging.log("dock(" + this.id + ").child.on(data): " + data.toString());
+                    logging.log("dock(" + this.id + ").child.on(data): " + JSON.stringify(data.toString()));
                     
                     this.emit("data", data);
                 });
                 
                 this.child.on("throw", (data) => {
-                    logging.log("dock(" + this.id + ").child.on(throw): " + data.toString());
+                    logging.log("dock(" + this.id + ").child.on(throw): " + JSON.stringify(data.toString()));
                 });
 
                 this.child.on("start", (status, info) => {

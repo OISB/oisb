@@ -90,6 +90,25 @@
         logging.log("cast.on(add): " + actor.id);
             
         var dock = docking.provision();
+
+        dock.on("data", (data) => {
+            logging.log("actor(" + actor.id + "): dock.on(data): " + JSON.stringify(data));
+
+            try {
+                data = json.output(JSON.parse(data));
+            } catch (info) {
+                // ???
+
+                logging.log("actor(" + actor.id + "): dock.on(data): invalid outputJSON");
+
+                return;
+            }
+
+            actor.notify({
+                action: "output",
+                data: data
+            });
+        });
         
         actor.on("run", async (input, status_back) => {
             logging.log("actor(" + actor.id + ").on(run): " + JSON.stringify(input));
@@ -104,10 +123,16 @@
                 return;
             }
             
-            if (!configs.has(input.language)) {
-                // ???
-                
-                logging.log("actor(" + actor.id + ").on(run): unknown language id: " + input.language);
+            if (!configs.has(String(input.language))) {
+                logging.log("actor(" + actor.id + ").on(run): unknown language id: " + String(input.language));
+
+                actor.notify({
+                    action: "throw",
+                    data: {
+                        id: "unknown_language",
+                        long: "Unknown language ID: " + String(input.language)
+                    }
+                });
                 
                 return;
             }
@@ -116,27 +141,10 @@
             
             dock.input(JSON.stringify(input));
             dock.finish_input();
-            
-            dock.on("data", (data) => {
-                logging.log("actor(" + actor.id + "): dock.on(data): " + data);
-                
-                try {
-                    data = json.output(JSON.parse(data));
-                } catch (info) {
-                    // ???
-                
-                    logging.log("actor(" + actor.id + "): dock.on(data): invalid outputJSON");
-                    
-                    return;
-                }
-                
-                actor.notify({
-                    action: "output",
-                    data: data
-                });
-            });
-            
-            dock.on("finish", (status) => {
+
+            dock.once("finish", (status) => {
+                logging.log("actor(" + actor.id + "): dock.on(finish): " + status);
+
                 actor.notify({
                     action: "finish",
                     data: {

@@ -27,12 +27,38 @@
             child.on("close", (code) => {
                 this.emit("closing", code);
             });
+
+            var stdio = 0;
             
             child.stdout.on("data", (data) => {
+                if (stdio + data.length > 1000) {
+                    this.emit("data", data.slice(0, 1000 - stdio).toString() + "...");
+
+                    child.kill("SIGKILL");
+                    child.stdout.removeAllListeners("data");
+                    child.stderr.removeAllListeners("data");
+
+                    return;
+                }
+
+                stdio += data.length;
+                
                 this.emit("data", data.toString());
             });
             
             child.stderr.on("data", (data) => {
+                if (stdio + data.length > 1000) {
+                    this.emit("throw", data.slice(0, 1000 - stdio).toString() + "...");
+
+                    child.kill("SIGKILL");
+                    child.stdout.removeAllListeners("data");
+                    child.stderr.removeAllListeners("data");
+
+                    return;
+                }
+
+                stdio += data.length;
+
                 this.emit("throw", data.toString());
             });
         }
