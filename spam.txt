@@ -1,7 +1,0 @@
-https://codegolf.stackexchange.com/flags/posts/242062/add/PostSpam
-    fkey: e5719394e7d262e58d11d4513b0a2256994f40b46782f85b188ec7abcb7023a3
-    otherText: 
-    overrideWarning: false
-https://codegolf.stackexchange.com/flags/posts/242062/retract/PostSpam
-    fkey: e5719394e7d262e58d11d4513b0a2256994f40b46782f85b188ec7abcb7023a3
-    otherText: 
