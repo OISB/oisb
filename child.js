@@ -32,7 +32,7 @@
             
             child.stdout.on("data", (data) => {
                 if (stdio + data.length > 1000) {
-                    this.emit("data", data.slice(0, 1000 - stdio).toString() + "...");
+                    this.emit("data", [data.slice(0, 1000 - stdio), ...Buffer.from("...")]);
 
                     child.kill("SIGKILL");
                     child.stdout.removeAllListeners("data");
@@ -48,7 +48,7 @@
             
             child.stderr.on("data", (data) => {
                 if (stdio + data.length > 1000) {
-                    this.emit("throw", data.slice(0, 1000 - stdio).toString() + "...");
+                    this.emit("throw", [data.slice(0, 1000 - stdio), ...Buffer.from("...")]);
 
                     child.kill("SIGKILL");
                     child.stdout.removeAllListeners("data");

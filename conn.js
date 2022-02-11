@@ -88,7 +88,7 @@
             return 0;
         }
         
-        close() {
+        disconn() {
             this.conn.close(...arguments);
         }
     }

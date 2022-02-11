@@ -44,7 +44,7 @@
                     "--memory-reservation", "20000000",
                     "--memory-swap", "100000000",
                     "--cpu-shares", "128",
-                    "--cpus", "0.25",
+                    "--cpus", "1.00",
                     "--name", "rto_" + this.id,
                     image
                 ];
@@ -90,7 +90,7 @@
                 return -1;
             }
             
-            logging.log("dock(" + this.id + ").input: " + String(input));
+            logging.log("dock(" + this.id + ").input:", input);
             
             this.child.stdin(input);
             

@@ -50,7 +50,7 @@
                 return;
 
             if (!("data" in data) || data.data == null || !("id" in data.data)) {
-                conn.close(1002, "Invalid initial action");
+                conn.disconn(1002, "Invalid initial action");
 
                 return;
             }
@@ -77,7 +77,7 @@
             actor = cast.find(data.data.id);
 
             if (!actor) {
-                conn.close(1008);
+                conn.disconn(1008);
 
                 return;
             }

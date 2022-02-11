@@ -74,7 +74,7 @@
             this.ping_stamp = now;
             
             if (confirm)
-                setTimeout(this.ping_confirm, options.max_ping == null ? 40000 : options.max_ping);
+                setTimeout(() => this.ping_confirm(), options.max_ping == null ? 40000 : options.max_ping);
         }
         
         ping_confirm() {
@@ -97,11 +97,11 @@
             logging.log("actor(" + this.id + ").pong");
         }
         
-        disconn(info) {
-            logging.log("actor(" + this.id + ").disconn" + (info ? info + ": " : ""));
+        disconn(status, info) {
+            logging.log("actor(" + this.id + ").disconn: " + status + (info ? " (" + info + ")" : ""));
             
             for (var conn of this.conns)
-                conn.close(1002, ...(info ? [info] : []));
+                conn.disconn(1002, ...(info ? [info] : []));
             
             this.cast.drop(this);
         }
